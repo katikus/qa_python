@@ -1,1 +1,11 @@
 # qa_python
+test_add_new_book_add_one_book_positive_result - проверка добавления книги (параметризованный) 
+test_add_new_book_add_book_without_name_positive_result - добавления книги без названия 
+test_add_new_book_add_book_with_long_name_positive_result - добавления книги с длинным названием 
+test_set_book_genre_set_correct_genre_positive_result - добавление жанра 
+test_set_book_genre_add_wrong_genre_positive_result - добавление несуществующего жанра 
+test_get_books_with_specific_genre_positive_result - получение книг по жанру 
+test_get_books_for_children_add_three_books_one_returned - книги для детей 
+test_add_book_in_favorites_add_one_one_in_favorite - добавление в избранное 
+test_add_book_in_favorites_add_uncollected_not_in_favorite - добавление в избранное недобавленной книги 
+test_delete_book_from_favorites_book_not_in_favorite - удаление книги из избранного
