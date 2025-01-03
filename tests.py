@@ -8,9 +8,10 @@ class TestBooksCollector:
         from main import BooksCollector
         return BooksCollector()
 
-    def test_add_new_book_add_one_book_positive_result(self, collector):
-        collector.add_new_book("Человеческая многоножка")
-        assert "Человеческая многоножка" in collector.get_books_genre()
+    @pytest.mark.parametrize('book_name', ['WH40K part1', 'WH40K part2', 'WH40K part3'])
+    def test_add_new_book_add_one_book_positive_result(self, collector, book_name):
+        collector.add_new_book(book_name)
+        assert book_name in collector.get_books_genre()
 
     def test_add_new_book_add_book_without_name_positive_result(self, collector):
         collector.add_new_book("")
