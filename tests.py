@@ -1,24 +1,81 @@
+import pytest
+
 from main import BooksCollector
 
-# класс TestBooksCollector объединяет набор тестов, которыми мы покрываем наше приложение BooksCollector
-# обязательно указывать префикс Test
 class TestBooksCollector:
+    @pytest.fixture
+    def collector(self):
+        from main import BooksCollector
+        return BooksCollector()
 
-    # пример теста:
-    # обязательно указывать префикс test_
-    # дальше идет название метода, который тестируем add_new_book_
-    # затем, что тестируем add_two_books - добавление двух книг
-    def test_add_new_book_add_two_books(self):
-        # создаем экземпляр (объект) класса BooksCollector
-        collector = BooksCollector()
+    @pytest.mark.parametrize('book_name', ['WH40K part1', 'WH40K part2', 'WH40K part3'])
+    def test_add_new_book_add_one_book_positive_result(self, collector, book_name):
+        collector.add_new_book(book_name)
+        assert book_name in collector.get_books_genre()
 
-        # добавляем две книги
-        collector.add_new_book('Гордость и предубеждение и зомби')
-        collector.add_new_book('Что делать, если ваш кот хочет вас убить')
+    def test_add_new_book_add_book_without_name_positive_result(self, collector):
+        collector.add_new_book("")
+        assert "" not in collector.get_books_genre()
 
-        # проверяем, что добавилось именно две
-        # словарь books_rating, который нам возвращает метод get_books_rating, имеет длину 2
-        assert len(collector.get_books_rating()) == 2
+    def test_add_new_book_add_book_with_long_name_positive_result(self, collector):
+        long_name = "A" * 42
+        collector.add_new_book(long_name)
+        assert long_name not in collector.get_books_genre()
 
-    # напиши свои тесты ниже
-    # чтобы тесты были независимыми в каждом из них создавай отдельный экземпляр класса BooksCollector()
+    def test_set_book_genre_set_correct_genre_positive_result(self, collector):
+        collector.add_new_book("Человеческая многоножка")
+        collector.set_book_genre("Человеческая многоножка", "Ужасы")
+        assert collector.get_book_genre("Человеческая многоножка") == "Ужасы"
+
+    def test_set_book_genre_add_wrong_genre_positive_result(self, collector):
+        collector.add_new_book("Человеческая многоножка")
+        collector.set_book_genre("Человеческая многоножка", "Боди-хоррор")
+        assert collector.get_book_genre("Человеческая многоножка") != "Боди-хоррор"
+
+    def test_get_books_with_specific_genre_positive_result(self):
+        booksbollector = BooksCollector()
+
+        booksbollector.add_new_book("Автостопом по Галактике")
+        booksbollector.set_book_genre("Автостопом по Галактике", "Фантастика")
+        booksbollector.add_new_book("Война миров")
+        booksbollector.set_book_genre("Война миров", "Фантастика")
+        booksbollector.add_new_book("Оно")
+        booksbollector.set_book_genre("Оно", "Ужасы")
+
+        books = booksbollector.get_books_with_specific_genre("Фантастика")
+        assert books == ["Автостопом по Галактике", "Война миров"]
+
+    def test_get_books_for_children_add_three_books_one_returned(self):
+        booksbollector = BooksCollector()
+
+        booksbollector.add_new_book("Автостопом по Галактике")
+        booksbollector.set_book_genre("Автостопом по Галактике", "Фантастика")
+        booksbollector.add_new_book("Оно")
+        booksbollector.set_book_genre("Оно", "Ужасы")
+        booksbollector.add_new_book("Десять негритят")
+        booksbollector.set_book_genre("Десять негритят", "Детективы")
+
+        children_books = booksbollector.get_books_for_children()
+        assert children_books == ["Автостопом по Галактике"]
+
+    def test_add_book_in_favorites_add_one_one_in_favorite(self):
+        booksbollector = BooksCollector()
+
+        booksbollector.add_new_book("Автостопом по Галактике")
+        booksbollector.add_book_in_favorites("Автостопом по Галактике")
+        assert "Автостопом по Галактике" in booksbollector.get_list_of_favorites_books()
+
+    def test_add_book_in_favorites_add_uncollected_not_in_favorite(self):
+        booksbollector = BooksCollector()
+
+        booksbollector.add_book_in_favorites("Десять негритят")
+        assert "Десять негритят" not in booksbollector.get_list_of_favorites_books()
+
+    def test_delete_book_from_favorites_book_not_in_favorite(self,):
+        booksbollector = BooksCollector()
+
+        booksbollector.add_new_book("Автостопом по Галактике")
+        booksbollector.add_book_in_favorites("Автостопом по Галактике")
+        booksbollector.delete_book_from_favorites("Автостопом по Галактике")
+        assert "Автостопом по Галактике" not in booksbollector.get_list_of_favorites_books()
+
